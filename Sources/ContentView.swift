@@ -1,4 +1,5 @@
 import SwiftUI
+import ServiceManagement
 
 struct AppUsageInfo: Identifiable, Comparable {
     let id: String // bundleID
@@ -12,6 +13,7 @@ struct AppUsageInfo: Identifiable, Comparable {
 
 struct ContentView: View {
     @ObservedObject var usageManager = UsageManager.shared
+    @State private var isLaunchAtLoginEnabled: Bool = SMAppService.mainApp.status == .enabled
     
     var sortedApps: [AppUsageInfo] {
         usageManager.currentUsage.appUsage.map { (bundleID, time) in
@@ -76,6 +78,30 @@ struct ContentView: View {
             
             // Footer
             HStack {
+                Toggle("Launch at login", isOn: $isLaunchAtLoginEnabled)
+                    .toggleStyle(.checkbox)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .onChange(of: isLaunchAtLoginEnabled) { newValue in
+                        do {
+                            if newValue {
+                                if SMAppService.mainApp.status != .enabled {
+                                    try SMAppService.mainApp.register()
+                                }
+                            } else {
+                                if SMAppService.mainApp.status == .enabled {
+                                    try SMAppService.mainApp.unregister()
+                                }
+                            }
+                        } catch {
+                            print("Failed to update Launch at login: \(error)")
+                            // Revert on failure
+                            isLaunchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+                        }
+                    }
+                
+                Spacer()
+                
                 Button(action: {
                     NSApplication.shared.terminate(nil)
                 }) {
@@ -84,12 +110,14 @@ struct ContentView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .foregroundColor(.secondary)
-                Spacer()
             }
             .padding(10)
             .background(Color(NSColor.windowBackgroundColor))
         }
         .frame(width: 320, height: 460)
+        .onAppear {
+            isLaunchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+        }
     }
     
     private func formatTime(_ interval: TimeInterval) -> String {

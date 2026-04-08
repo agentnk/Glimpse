@@ -17,4 +17,7 @@ swiftc -o "$MACOS_DIR/$APP_NAME" Sources/*.swift -framework SwiftUI -framework A
 # Copy Info.plist
 cp Info.plist "$APP_DIR/Contents/"
 
+# Code sign the application folder (required for Launch at Login / SMAppService to function)
+codesign --force --deep --sign - "$APP_DIR"
+
 echo "Build complete! Run 'open Glimpse.app' or './$MACOS_DIR/$APP_NAME'"
