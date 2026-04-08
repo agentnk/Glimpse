@@ -31,3 +31,7 @@ To compile and launch Glimpse from source:
 * **Language:** Swift 5
 * **UI:** SwiftUI
 * **System Integration:** AppKit, Foundation, NSWorkspace
+
+## Roadmap 🗺️
+
+See [ROADMAP.md](ROADMAP.md) for planned features and future direction.
