@@ -1,5 +1,6 @@
 import SwiftUI
 import Cocoa
+import UniformTypeIdentifiers
 
 struct AppRowView: View {
     let appInfo: AppUsageInfo
@@ -29,9 +30,12 @@ struct AppRowView: View {
         if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
             return NSWorkspace.shared.icon(forFile: url.path)
         }
-        // Fallback generic application icon
-        let genericAppIcon = NSWorkspace.shared.icon(forFileType: "'APPL'")
-        return genericAppIcon
+        // Fallback generic application icon using modern API if available
+        if #available(macOS 12.0, *) {
+            return NSWorkspace.shared.icon(for: .application)
+        } else {
+            return NSImage(named: NSImage.applicationIconName) ?? NSImage()
+        }
     }
     
     private func formatTime(_ interval: TimeInterval) -> String {

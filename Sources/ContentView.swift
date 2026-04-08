@@ -29,44 +29,84 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
-                Text("Glimpse")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                Spacer()
-                // Idle status badge
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(idleDetector.isIdle ? Color.orange : Color.green)
-                        .frame(width: 7, height: 7)
-                    Text(idleDetector.isIdle ? "Paused · idle" : "Tracking")
-                        .font(.caption2)
-                        .foregroundColor(idleDetector.isIdle ? .orange : .secondary)
-                }
-                .animation(.easeInOut(duration: 0.3), value: idleDetector.isIdle)
-            }
-            .padding()
-            .background(Color(NSColor.windowBackgroundColor))
-            
+            HeaderView(isIdle: idleDetector.isIdle)
             Divider()
             
-            // Total Time summary
-            VStack {
-                Text(formatTime(totalTime))
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-                Text("Total Active Time")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.vertical, 24)
-            .frame(maxWidth: .infinity)
-            .background(Color(NSColor.controlBackgroundColor))
-            
+            TotalTimeSummaryView(totalTime: totalTime)
             Divider()
             
-            // App List
+            AppListView(sortedApps: sortedApps)
+            Divider()
+            
+            FooterView(isLaunchAtLoginEnabled: $isLaunchAtLoginEnabled)
+        }
+        .frame(width: 320, height: 460)
+        .onAppear {
+            isLaunchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+        }
+    }
+}
+
+// MARK: - Subviews
+
+struct HeaderView: View {
+    let isIdle: Bool
+    
+    var body: some View {
+        HStack {
+            Text("Glimpse")
+                .font(.headline)
+                .fontWeight(.bold)
+            Spacer()
+            // Idle status badge
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(isIdle ? Color.orange : Color.green)
+                    .frame(width: 7, height: 7)
+                Text(isIdle ? "Paused · idle" : "Tracking")
+                    .font(.caption2)
+                    .foregroundColor(isIdle ? .orange : .secondary)
+            }
+            .animation(.easeInOut(duration: 0.3), value: isIdle)
+        }
+        .padding()
+        .background(Color(NSColor.windowBackgroundColor))
+    }
+}
+
+struct TotalTimeSummaryView: View {
+    let totalTime: TimeInterval
+    
+    var body: some View {
+        VStack {
+            Text(formatTime(totalTime))
+                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .foregroundColor(.primary)
+            Text("Total Active Time")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 24)
+        .frame(maxWidth: .infinity)
+        .background(Color(NSColor.controlBackgroundColor))
+    }
+    
+    private func formatTime(_ interval: TimeInterval) -> String {
+        let IntInterval = Int(interval)
+        let hours = IntInterval / 3600
+        let minutes = (IntInterval % 3600) / 60
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        }
+        return "\(minutes)m"
+    }
+}
+
+struct AppListView: View {
+    let sortedApps: [AppUsageInfo]
+    
+    var body: some View {
+        Group {
             if sortedApps.isEmpty {
                 VStack {
                     Spacer()
@@ -81,60 +121,49 @@ struct ContentView: View {
                 }
                 .listStyle(PlainListStyle())
             }
-            
-            Divider()
-            
-            // Footer
-            HStack {
-                Toggle("Launch at login", isOn: $isLaunchAtLoginEnabled)
-                    .toggleStyle(.checkbox)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .onChange(of: isLaunchAtLoginEnabled) { newValue in
-                        do {
-                            if newValue {
-                                if SMAppService.mainApp.status != .enabled {
-                                    try SMAppService.mainApp.register()
-                                }
-                            } else {
-                                if SMAppService.mainApp.status == .enabled {
-                                    try SMAppService.mainApp.unregister()
-                                }
-                            }
-                        } catch {
-                            print("Failed to update Launch at login: \(error)")
-                            // Revert on failure
-                            isLaunchAtLoginEnabled = SMAppService.mainApp.status == .enabled
-                        }
-                    }
-                
-                Spacer()
-                
-                Button(action: {
-                    NSApplication.shared.terminate(nil)
-                }) {
-                    Text("Quit Glimpse")
-                        .font(.caption)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .foregroundColor(.secondary)
-            }
-            .padding(10)
-            .background(Color(NSColor.windowBackgroundColor))
-        }
-        .frame(width: 320, height: 460)
-        .onAppear {
-            isLaunchAtLoginEnabled = SMAppService.mainApp.status == .enabled
         }
     }
+}
+
+struct FooterView: View {
+    @Binding var isLaunchAtLoginEnabled: Bool
     
-    private func formatTime(_ interval: TimeInterval) -> String {
-        let IntInterval = Int(interval)
-        let hours = IntInterval / 3600
-        let minutes = (IntInterval % 3600) / 60
-        if hours > 0 {
-            return "\(hours)h \(minutes)m"
+    var body: some View {
+        HStack {
+            Toggle("Launch at login", isOn: $isLaunchAtLoginEnabled)
+                .toggleStyle(.checkbox)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .onChange(of: isLaunchAtLoginEnabled) { oldValue, newValue in
+                    do {
+                        if newValue {
+                            if SMAppService.mainApp.status != .enabled {
+                                try SMAppService.mainApp.register()
+                            }
+                        } else {
+                            if SMAppService.mainApp.status == .enabled {
+                                try SMAppService.mainApp.unregister()
+                            }
+                        }
+                    } catch {
+                        print("Failed to update Launch at login: \(error)")
+                        // Revert on failure
+                        isLaunchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+                    }
+                }
+            
+            Spacer()
+            
+            Button(action: {
+                NSApplication.shared.terminate(nil)
+            }) {
+                Text("Quit Glimpse")
+                    .font(.caption)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .foregroundColor(.secondary)
         }
-        return "\(minutes)m"
+        .padding(10)
+        .background(Color(NSColor.windowBackgroundColor))
     }
 }
