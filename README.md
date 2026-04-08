@@ -7,6 +7,7 @@ Glimpse quietly runs in your menu bar and tracks the time you spend on each acti
 ## Features ✨
 - **Zero Distraction:** Lives entirely in your menu bar. No dock icon, no intrusive notifications.
 - **Automatic Tracking:** Automatically detects the frontmost active app and records usage in the background.
+- **Idle Detection:** Automatically pauses tracking after 3 minutes of inactivity. Time is never logged when you step away. A live status badge in the popover header shows whether Glimpse is actively tracking or paused.
 - **Launch at Login:** Configure Glimpse to automatically start when you boot your Mac so you never forget to launch it.
 - **Daily Summary:** Presents a simple daily summary in a clean, elegant popover interface. Data automatically resets at midnight.
 - **Native & Lightweight:** Built entirely with Swift, SwiftUI, and AppKit for lightning-fast performance, low data storage overhead, and minimal battery footprint.

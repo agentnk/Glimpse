@@ -8,6 +8,8 @@ class AppTracker {
     
     func start() {
         lastCheckTime = Date()
+        // Start idle detection alongside the main tracking timer
+        IdleDetector.shared.start()
         // Track every 5 seconds
         timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.trackCurrentApp()
@@ -18,6 +20,13 @@ class AppTracker {
     func trackCurrentApp() {
         let now = Date()
         guard let lastTime = lastCheckTime else {
+            lastCheckTime = now
+            return
+        }
+
+        // When the user is idle, reset the clock so the idle gap is never
+        // counted as usage time when they come back.
+        guard !IdleDetector.shared.isIdle else {
             lastCheckTime = now
             return
         }

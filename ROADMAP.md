@@ -6,17 +6,6 @@ This document outlines the planned future features and improvements for **Glimps
 
 ## 🔜 Up Next
 
-### 💤 Idle / Inactivity Detection
-> Prevents time from being logged when you step away from your Mac.
-
-Time is currently tracked based on whichever app is in the foreground—even if you've walked away. We'll use `CGEventSourceSecondsSinceLastEventType` to detect system-wide inactivity and automatically pause tracking after a configurable idle threshold (e.g., 3–5 minutes).
-
-- [ ] Detect idle time via `CGEventSource`
-- [ ] Configurable idle timeout threshold
-- [ ] Visual indicator in the UI when tracking is paused
-
----
-
 ### 🚫 App Ignore List
 > Stop tracking apps that aren't relevant to your productivity.
 
@@ -88,6 +77,7 @@ These are longer-term ideas that need more exploration before committing to an i
 | `v1.0.0` | Midnight data auto-reset & JSON persistence |
 | `v1.0.0` | Custom `build.sh` with ad-hoc code signing |
 | `v1.1.0` | Launch at login via `SMAppService` |
+| `v1.2.0` | Idle & inactivity detection via `CGEventSource` with live status badge |
 
 ---
 

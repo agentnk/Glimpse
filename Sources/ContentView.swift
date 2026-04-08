@@ -13,6 +13,7 @@ struct AppUsageInfo: Identifiable, Comparable {
 
 struct ContentView: View {
     @ObservedObject var usageManager = UsageManager.shared
+    @ObservedObject var idleDetector = IdleDetector.shared
     @State private var isLaunchAtLoginEnabled: Bool = SMAppService.mainApp.status == .enabled
     
     var sortedApps: [AppUsageInfo] {
@@ -34,9 +35,16 @@ struct ContentView: View {
                     .font(.headline)
                     .fontWeight(.bold)
                 Spacer()
-                Text("Today")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                // Idle status badge
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(idleDetector.isIdle ? Color.orange : Color.green)
+                        .frame(width: 7, height: 7)
+                    Text(idleDetector.isIdle ? "Paused · idle" : "Tracking")
+                        .font(.caption2)
+                        .foregroundColor(idleDetector.isIdle ? .orange : .secondary)
+                }
+                .animation(.easeInOut(duration: 0.3), value: idleDetector.isIdle)
             }
             .padding()
             .background(Color(NSColor.windowBackgroundColor))
