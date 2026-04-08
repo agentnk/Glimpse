@@ -28,10 +28,19 @@ To compile and launch Glimpse from source:
    ```
 4. Glimpse will compile instantly into `Glimpse.app`. You can launch it by running `open Glimpse.app` in your terminal or simply double-clicking the application bundle in Finder.
 
+## Architecture 🏗️
+
+Glimpse is designed with a clean, modular structure to ensure easy maintainability:
+- **`AppTracker`:** Monitors the active application dynamically using `NSWorkspace` notifications.
+- **`IdleDetector`:** Prevents phantom tracking by checking system-wide inactivity via `CGEventSource`.
+- **`UsageManager`:** Handles data persistence, fast JSON serialization, and automatic midnight resets.
+- **`MenuBarManager`:** Manages the system menu bar item (`LSUIElement`) lifecycle and popover state.
+- **Views (`ContentView` & Subviews):** A minimalist, component-driven SwiftUI frontend for displaying your daily summary.
+
 ## Tech Stack 💻
 * **Language:** Swift 5
 * **UI:** SwiftUI
-* **System Integration:** AppKit, Foundation, NSWorkspace
+* **System Integration:** AppKit, Foundation, NSWorkspace, ServiceManagement
 
 ## Roadmap 🗺️
 
