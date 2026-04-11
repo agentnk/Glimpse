@@ -10,8 +10,10 @@ class UsageManager: ObservableObject {
     static let shared = UsageManager()
     
     @Published var currentUsage: UsageData = UsageData(dateString: UsageManager.todayString(), appUsage: [:], appNames: [:])
+    @Published var appCategories: [String: AppCategory] = [:]
     
-    private let fileURL: URL
+    private let usageFileURL: URL
+    private let categoriesFileURL: URL
     
     private init() {
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
@@ -21,8 +23,10 @@ class UsageManager: ObservableObject {
             try? FileManager.default.createDirectory(at: appSupportDir, withIntermediateDirectories: true, attributes: nil)
         }
         
-        fileURL = appSupportDir.appendingPathComponent("usage.json")
+        usageFileURL = appSupportDir.appendingPathComponent("usage.json")
+        categoriesFileURL = appSupportDir.appendingPathComponent("categories.json")
         loadData()
+        loadCategories()
     }
     
     static func todayString() -> String {
@@ -42,6 +46,9 @@ class UsageManager: ObservableObject {
     func addUsage(bundleID: String, appName: String, time: TimeInterval) {
         checkAndResetDate()
         DispatchQueue.main.async {
+            // Only track if not ignored
+            if self.appCategories[bundleID] == .ignored { return }
+            
             self.currentUsage.appNames[bundleID] = appName
             let current = self.currentUsage.appUsage[bundleID] ?? 0
             self.currentUsage.appUsage[bundleID] = current + time
@@ -49,8 +56,20 @@ class UsageManager: ObservableObject {
         }
     }
     
+    func setCategory(for bundleID: String, category: AppCategory) {
+        DispatchQueue.main.async {
+            self.appCategories[bundleID] = category
+            self.saveCategories()
+            
+            // If switched TO ignored, we might want to clean up current usage, 
+            // but for simplicity we'll just let it stay in history and filter it on UI.
+            // Actually, let's keep it consistent: ignore means "don't show or count".
+            self.objectWillChange.send()
+        }
+    }
+    
     private func loadData() {
-        guard let data = try? Data(contentsOf: fileURL),
+        guard let data = try? Data(contentsOf: usageFileURL),
               let usage = try? JSONDecoder().decode(UsageData.self, from: data) else {
             return
         }
@@ -64,8 +83,21 @@ class UsageManager: ObservableObject {
         }
     }
     
+    private func loadCategories() {
+        guard let data = try? Data(contentsOf: categoriesFileURL),
+              let categories = try? JSONDecoder().decode([String: AppCategory].self, from: data) else {
+            return
+        }
+        self.appCategories = categories
+    }
+    
     private func saveData() {
         guard let data = try? JSONEncoder().encode(currentUsage) else { return }
-        try? data.write(to: fileURL)
+        try? data.write(to: usageFileURL)
+    }
+    
+    private func saveCategories() {
+        guard let data = try? JSONEncoder().encode(appCategories) else { return }
+        try? data.write(to: categoriesFileURL)
     }
 }

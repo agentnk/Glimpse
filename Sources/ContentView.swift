@@ -17,14 +17,36 @@ struct ContentView: View {
     @State private var isLaunchAtLoginEnabled: Bool = SMAppService.mainApp.status == .enabled
     
     var sortedApps: [AppUsageInfo] {
-        usageManager.currentUsage.appUsage.map { (bundleID, time) in
+        usageManager.currentUsage.appUsage.compactMap { (bundleID, time) in
+            guard usageManager.appCategories[bundleID] != .ignored else { return nil }
             let name = usageManager.currentUsage.appNames[bundleID] ?? "Unknown"
             return AppUsageInfo(id: bundleID, name: name, time: time)
         }.sorted()
     }
     
     var totalTime: TimeInterval {
-        usageManager.currentUsage.appUsage.values.reduce(0, +)
+        usageManager.currentUsage.appUsage.reduce(0) { sum, entry in
+            let bundleID = entry.key
+            let time = entry.value
+            return usageManager.appCategories[bundleID] == .ignored ? sum : sum + time
+        }
+    }
+    
+    var productivityBreakdown: (productive: TimeInterval, neutral: TimeInterval, distracting: TimeInterval) {
+        var p: TimeInterval = 0
+        var n: TimeInterval = 0
+        var d: TimeInterval = 0
+        
+        for (bundleID, time) in usageManager.currentUsage.appUsage {
+            let category = usageManager.appCategories[bundleID] ?? .neutral
+            switch category {
+            case .productive: p += time
+            case .neutral: n += time
+            case .distracting: d += time
+            case .ignored: break
+            }
+        }
+        return (p, n, d)
     }
     
     var body: some View {
@@ -32,7 +54,7 @@ struct ContentView: View {
             HeaderView(isIdle: idleDetector.isIdle)
             Divider()
             
-            TotalTimeSummaryView(totalTime: totalTime)
+            TotalTimeSummaryView(totalTime: totalTime, breakdown: productivityBreakdown)
             Divider()
             
             AppListView(sortedApps: sortedApps)
@@ -76,15 +98,23 @@ struct HeaderView: View {
 
 struct TotalTimeSummaryView: View {
     let totalTime: TimeInterval
+    let breakdown: (productive: TimeInterval, neutral: TimeInterval, distracting: TimeInterval)
     
     var body: some View {
-        VStack {
+        VStack(spacing: 8) {
             Text(formatTime(totalTime))
                 .font(.system(size: 36, weight: .bold, design: .rounded))
                 .foregroundColor(.primary)
             Text("Total Active Time")
                 .font(.caption)
                 .foregroundColor(.secondary)
+            
+            ProductivityBarView(
+                productiveTime: breakdown.productive,
+                neutralTime: breakdown.neutral,
+                distractingTime: breakdown.distracting
+            )
+            .padding(.top, 8)
         }
         .padding(.vertical, 24)
         .frame(maxWidth: .infinity)
