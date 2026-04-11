@@ -10,6 +10,9 @@ Glimpse quietly runs in your menu bar and tracks the time you spend on each acti
 - **Idle Detection:** Automatically pauses tracking after 3 minutes of inactivity. Time is never logged when you step away. A live status badge in the popover header shows whether Glimpse is actively tracking or paused.
 - **Launch at Login:** Configure Glimpse to automatically start when you boot your Mac so you never forget to launch it.
 - **Daily Summary:** Presents a simple daily summary in a clean, elegant popover interface. Data automatically resets at midnight.
+- **Productivity Categorization:** Classify apps as Productive, Distracting, or Neutral via a context menu. A persistent color-coded system helps you spot your focus areas instantly.
+- **Productivity Ratio Bar:** See your day's efficiency at a glance with a horizontal bar showing the ratio of productive task time vs. distractions.
+- **App Ignore List:** Exclude utility apps (Finder, System Settings, etc.) from tracking to ensure your productivity stats remain accurate.
 - **Native & Lightweight:** Built entirely with Swift, SwiftUI, and AppKit for lightning-fast performance, low data storage overhead, and minimal battery footprint.
 
 ## Installation & Build 🛠️

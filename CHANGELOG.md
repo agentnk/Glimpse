@@ -1,6 +1,17 @@
 # Changelog
 
 All notable changes to the **Glimpse** project will be documented in this file.
+ 
+## [1.3.0] - Productivity Categorization & App Ignoring
+ 
+### Added
+- **Productivity Categorization**: Users can now right-click any app in the summary list to tag it as **Productive**, **Neutral**, or **Distracting**.
+- **Visual Indicators**: App rows now feature color-coded indicators (Green, Gray, Red) reflecting their assigned category.
+- **Productivity Ratio Bar**: A new horizontal segmented bar in the daily summary header visualizes the proportion of time spent on productive vs. distracting tasks.
+- **App Ignore List**: A new "Ignore App" category allows users to hide specific utility apps (like Finder or System Settings) from both the list and total time calculations.
+- **Persistent Settings**: Categories are stored globally in `categories.json`, ensuring your classifications persist across daily resets.
+ 
+---
 
 ## [1.2.0] - Idle & Inactivity Detection
 
