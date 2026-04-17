@@ -17,15 +17,6 @@ Currently, usage data is wiped at midnight. We'll upgrade `UsageManager` to reta
 
 ---
 
-### ⏱️ Live Menu Bar Timer
-> See at a glance how long you've been in the current app.
-
-Replace (or supplement) the static eye icon with a live timer showing time spent in the currently active application directly in the menu bar — e.g. `VSCode  42m`.
-
-- [ ] Optional toggle in the popover footer
-- [ ] Efficient 1-second refresh without noticeable CPU overhead
-- [ ] Respect idle detection so the timer pauses when you're away
-
 ---
 
 ## 💡 Ideas & Exploration
@@ -55,6 +46,7 @@ These are longer-term ideas that need more exploration before committing to an i
 | `v1.1.0` | Launch at login via `SMAppService` |
 | `v1.2.0` | Idle & inactivity detection via `CGEventSource` with live status badge |
 | `v1.3.0` | **Productivity Categorization & App Ignoring** via context menu |
+| `v1.4.0` | **Live Menu Bar Timer** — real-time app name & session time in the menu bar, idle-aware, togglable |
 
 ---
 

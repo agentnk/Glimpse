@@ -9,7 +9,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Initialize popover
         popover = NSPopover()
-        popover.contentSize = NSSize(width: 300, height: 420)
+        popover.contentSize = NSSize(width: 300, height: 490)
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: ContentView())
 
@@ -17,7 +17,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
         if let button = statusBarItem.button {
-            // Using a simple SF Symbol for the eye
             button.image = NSImage(systemSymbolName: "eye.circle.fill", accessibilityDescription: "Glimpse")
             button.action = #selector(togglePopover(_:))
         }
@@ -27,6 +26,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Start tracking usage
         AppTracker.shared.start()
+
+        // Start live menu bar timer (respects stored user preference)
+        MenuBarTimerManager.shared.start(statusItem: statusBarItem)
     }
 
     @objc func togglePopover(_ sender: AnyObject?) {
