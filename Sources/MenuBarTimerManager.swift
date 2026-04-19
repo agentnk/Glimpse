@@ -103,18 +103,7 @@ class MenuBarTimerManager {
             ? String(appName.prefix(maxLen - 1)) + "…"
             : appName
 
-        let h = seconds / 3600
-        let m = (seconds % 3600) / 60
-        let s = seconds % 60
-
-        let time: String
-        if h > 0 {
-            time = "\(h)h \(m)m"
-        } else if m > 0 {
-            time = "\(m)m"
-        } else {
-            time = "\(s)s"
-        }
+        let time = TimeFormatterUtil.formatTime(seconds, style: .exact)
 
         return "\(name)  \(time)"
     }

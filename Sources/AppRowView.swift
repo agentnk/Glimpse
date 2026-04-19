@@ -25,7 +25,7 @@ struct AppRowView: View {
             
             Spacer()
             
-            Text(formatTime(appInfo.time))
+            Text(TimeFormatterUtil.formatTime(appInfo.time, style: .row))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .monospacedDigit()
@@ -56,16 +56,5 @@ struct AppRowView: View {
         }
     }
     
-    private func formatTime(_ interval: TimeInterval) -> String {
-        let IntInterval = Int(interval)
-        let hours = IntInterval / 3600
-        let minutes = (IntInterval % 3600) / 60
-        if hours > 0 {
-            return "\(hours)h \(minutes)m"
-        } else if minutes > 0 {
-            return "\(minutes)m"
-        } else {
-            return "< 1m"
-        }
-    }
+
 }
