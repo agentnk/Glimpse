@@ -42,4 +42,9 @@ struct TimeFormatterUtil {
             }
         }
     }
+
+    static func formatDuration(_ interval: TimeInterval) -> String {
+        return formatTime(interval, style: .summary)
+    }
 }
+

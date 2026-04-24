@@ -9,37 +9,17 @@ struct ContentView: View {
     @State private var selectedRecapDate: String = UsageManager.todayString()
     
     var sortedApps: [AppUsageInfo] {
-        usageManager.currentUsage.appUsage.compactMap { (bundleID, time) in
-            guard usageManager.appCategories[bundleID] != .ignored else { return nil }
-            let name = usageManager.currentUsage.appNames[bundleID] ?? "Unknown"
-            return AppUsageInfo(id: bundleID, name: name, time: time)
-        }.sorted()
+        usageManager.currentUsage.sortedApps(categories: usageManager.appCategories)
     }
     
     var totalTime: TimeInterval {
-        usageManager.currentUsage.appUsage.reduce(0) { sum, entry in
-            let bundleID = entry.key
-            let time = entry.value
-            return usageManager.appCategories[bundleID] == .ignored ? sum : sum + time
-        }
+        usageManager.currentUsage.totalTime(categories: usageManager.appCategories)
     }
     
     var productivityBreakdown: (productive: TimeInterval, neutral: TimeInterval, distracting: TimeInterval) {
-        var p: TimeInterval = 0
-        var n: TimeInterval = 0
-        var d: TimeInterval = 0
-        
-        for (bundleID, time) in usageManager.currentUsage.appUsage {
-            let category = usageManager.appCategories[bundleID] ?? .neutral
-            switch category {
-            case .productive: p += time
-            case .neutral: n += time
-            case .distracting: d += time
-            case .ignored: break
-            }
-        }
-        return (p, n, d)
+        usageManager.currentUsage.breakdown(categories: usageManager.appCategories)
     }
+
     
     var body: some View {
         VStack(spacing: 0) {

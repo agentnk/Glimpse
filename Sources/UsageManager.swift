@@ -4,12 +4,43 @@ struct UsageData: Codable {
     var dateString: String
     var appUsage: [String: TimeInterval] // BundleID -> Time
     var appNames: [String: String] // BundleID -> App Name
-}
-
+    
+    // Calculated helpers
+    func totalTime(categories: [String: AppCategory]) -> TimeInterval {
+        appUsage.reduce(0) { sum, entry in
+            let bundleID = entry.key
+            let time = entry.value
+            return categories[bundleID] == .ignored ? sum : sum + time
+        }
+    }
+    
+    func breakdown(categories: [String: AppCategory]) -> (productive: TimeInterval, neutral: TimeInterval, distracting: TimeInterval) {
+        var p: TimeInterval = 0
+        var n: TimeInterval = 0
+        var d: TimeInterval = 0
+        
+        for (bundleID, time) in appUsage {
+            let category = categories[bundleID] ?? .neutral
+            switch category {
+            case .productive: p += time
+            case .neutral: n += time
+            case .distracting: d += time
+            case .ignored: break
+            }
+        }
+        return (p, n, d)
+    }
+    
+    func sortedApps(categories: [String: AppCategory]) -> [AppUsageInfo] {
+        appUsage.compactMap { (bundleID, time) in
+            guard categories[bundleID] != .ignored else { return nil }
+            let name = appNames[bundleID] ?? "Unknown"
+            return AppUsageInfo(id: bundleID, name: name, time: time)
+        }.sorted()
+    }
 struct UsageHistory: Codable {
     var days: [String: UsageData]
 }
-
 
 class UsageManager: ObservableObject {
     static let shared = UsageManager()
@@ -123,4 +154,3 @@ class UsageManager: ObservableObject {
         try? data.write(to: categoriesFileURL)
     }
 }
-

@@ -20,41 +20,22 @@ struct DailyRecapView: View {
     }
     
     var sortedApps: [AppUsageInfo] {
-        guard let usage = usage else { return [] }
-        return usage.appUsage.compactMap { (bundleID, time) in
-            guard usageManager.appCategories[bundleID] != .ignored else { return nil }
-            let name = usage.appNames[bundleID] ?? "Unknown"
-            return AppUsageInfo(id: bundleID, name: name, time: time)
-        }.sorted()
+        usage?.sortedApps(categories: usageManager.appCategories) ?? []
     }
     
     var breakdown: (productive: TimeInterval, neutral: TimeInterval, distracting: TimeInterval) {
-        var p: TimeInterval = 0
-        var n: TimeInterval = 0
-        var d: TimeInterval = 0
-        
-        guard let usage = usage else { return (0, 0, 0) }
-        
-        for (bundleID, time) in usage.appUsage {
-            let category = usageManager.appCategories[bundleID] ?? .neutral
-            switch category {
-            case .productive: p += time
-            case .neutral: n += time
-            case .distracting: d += time
-            case .ignored: break
-            }
-        }
-        return (p, n, d)
+        usage?.breakdown(categories: usageManager.appCategories) ?? (0, 0, 0)
     }
     
     var totalTime: TimeInterval {
-        breakdown.productive + breakdown.neutral + breakdown.distracting
+        usage?.totalTime(categories: usageManager.appCategories) ?? 0
     }
     
     var productivityScore: Int {
         guard totalTime > 0 else { return 0 }
         return Int((breakdown.productive / totalTime) * 100)
     }
+
     
     var body: some View {
         VStack(spacing: 20) {

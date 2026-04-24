@@ -55,6 +55,4 @@ struct AppRowView: View {
             return NSImage(named: NSImage.applicationIconName) ?? NSImage()
         }
     }
-    
-
 }
