@@ -2,6 +2,17 @@
 
 All notable changes to the **Glimpse** project will be documented in this file.
 
+## [1.5.0] - Daily Recap & Historical Data
+
+### Added
+- **`DailyRecapView`**: A new, premium visual summary view with a productivity score gauge, efficiency breakdown bar, and top apps summary.
+- **Historical Data Engine**: `UsageManager` now persists daily usage into a historical archive (`usage_history.json`), enabling users to review previous days.
+- **Date Navigation**: Browse through your productivity history using the new "Previous/Next" day navigation in the recap view.
+- **Data Migration**: Automatic migration of existing `usage.json` data into the new history-aware system on first launch.
+- **Header Shortcut**: A new chart icon in the popover header provides quick access to the Daily Recap sheet.
+
+---
+
 ## [1.4.0] - Live Menu Bar Timer
 
 ### Added

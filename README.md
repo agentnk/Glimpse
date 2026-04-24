@@ -10,7 +10,8 @@ Glimpse quietly runs in your menu bar and tracks the time you spend on each acti
 - **Idle Detection:** Automatically pauses tracking after 3 minutes of inactivity. Time is never logged when you step away. A live status badge in the popover header shows whether Glimpse is actively tracking or paused.
 - **Live Menu Bar Timer:** Optionally displays the current app name and today's accumulated time directly in the menu bar (e.g. `VSCode  14m`), refreshing every second. Automatically hides while idle and reverts to the Glimpse eye icon when disabled.
 - **Launch at Login:** Configure Glimpse to automatically start when you boot your Mac so you never forget to launch it.
-- **Daily Summary:** Presents a simple daily summary in a clean, elegant popover interface. Data automatically resets at midnight.
+- **Daily Recap & History:** Review your productivity with a visual "Daily Recap" summary. Browse back through previous days using the historical data engine to spot trends and review your achievements.
+- **Daily Summary:** Presents a simple daily summary in a clean, elegant popover interface. Data is now archived daily instead of being wiped.
 - **Productivity Categorization:** Classify apps as Productive, Distracting, or Neutral via a context menu. A persistent color-coded system helps you spot your focus areas instantly.
 - **Productivity Ratio Bar:** See your day's efficiency at a glance with a horizontal bar showing the ratio of productive task time vs. distractions.
 - **App Ignore List:** Exclude utility apps (Finder, System Settings, etc.) from tracking to ensure your productivity stats remain accurate.
@@ -37,10 +38,10 @@ To compile and launch Glimpse from source:
 Glimpse is designed with a clean, modular structure to ensure easy maintainability:
 - **`AppTracker`:** Monitors the active application dynamically using `NSWorkspace` notifications.
 - **`IdleDetector`:** Prevents phantom tracking by checking system-wide inactivity via `CGEventSource`.
-- **`UsageManager`:** Handles data persistence, fast JSON serialization, and automatic midnight resets.
+- **`UsageManager`:** Handles historical data persistence, app categorization, and seamless day-over-day archiving using JSON history files.
 - **`MenuBarManager`:** Manages the system menu bar item (`LSUIElement`) lifecycle and popover state.
 - **`MenuBarTimerManager`:** Drives the optional live label in the menu bar, polling `UsageManager` every second and respecting idle state. Preference is stored in `UserDefaults`.
-- **Views (`ContentView` & Subviews):** A minimalist, component-driven SwiftUI frontend for displaying your daily summary.
+- **Views (`DailyRecapView`, `ContentView` & Subviews):** A minimalist, component-driven SwiftUI frontend providing both a live dashboard and a detailed historical recap experience.
 
 ## Tech Stack 💻
 * **Language:** Swift 5
