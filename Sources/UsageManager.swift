@@ -6,10 +6,16 @@ struct UsageData: Codable {
     var appNames: [String: String] // BundleID -> App Name
 }
 
+struct UsageHistory: Codable {
+    var days: [String: UsageData]
+}
+
+
 class UsageManager: ObservableObject {
     static let shared = UsageManager()
     
     @Published var currentUsage: UsageData = UsageData(dateString: UsageManager.todayString(), appUsage: [:], appNames: [:])
+    @Published var history: [String: UsageData] = [:]
     @Published var appCategories: [String: AppCategory] = [:]
     
     private let usageFileURL: URL
@@ -23,7 +29,7 @@ class UsageManager: ObservableObject {
             try? FileManager.default.createDirectory(at: appSupportDir, withIntermediateDirectories: true, attributes: nil)
         }
         
-        usageFileURL = appSupportDir.appendingPathComponent("usage.json")
+        usageFileURL = appSupportDir.appendingPathComponent("usage_history.json")
         categoriesFileURL = appSupportDir.appendingPathComponent("categories.json")
         loadData()
         loadCategories()
@@ -38,6 +44,8 @@ class UsageManager: ObservableObject {
     func checkAndResetDate() {
         let today = UsageManager.todayString()
         if currentUsage.dateString != today {
+            // Archive current usage before reset
+            history[currentUsage.dateString] = currentUsage
             currentUsage = UsageData(dateString: today, appUsage: [:], appNames: [:])
             saveData()
         }
@@ -52,6 +60,9 @@ class UsageManager: ObservableObject {
             self.currentUsage.appNames[bundleID] = appName
             let current = self.currentUsage.appUsage[bundleID] ?? 0
             self.currentUsage.appUsage[bundleID] = current + time
+            
+            // Also keep history updated in memory (optional, but good for real-time history views)
+            self.history[self.currentUsage.dateString] = self.currentUsage
             self.saveData()
         }
     }
@@ -60,26 +71,35 @@ class UsageManager: ObservableObject {
         DispatchQueue.main.async {
             self.appCategories[bundleID] = category
             self.saveCategories()
-            
-            // If switched TO ignored, we might want to clean up current usage, 
-            // but for simplicity we'll just let it stay in history and filter it on UI.
-            // Actually, let's keep it consistent: ignore means "don't show or count".
             self.objectWillChange.send()
         }
     }
     
     private func loadData() {
-        guard let data = try? Data(contentsOf: usageFileURL),
-              let usage = try? JSONDecoder().decode(UsageData.self, from: data) else {
-            return
-        }
-        
-        if usage.dateString == UsageManager.todayString() {
-            self.currentUsage = usage
+        // Try loading history first
+        if let data = try? Data(contentsOf: usageFileURL),
+           let loadedHistory = try? JSONDecoder().decode(UsageHistory.self, from: data) {
+            self.history = loadedHistory.days
+            let today = UsageManager.todayString()
+            if let todayUsage = self.history[today] {
+                self.currentUsage = todayUsage
+            } else {
+                // Check if old format exists for migration or just start fresh
+                self.currentUsage = UsageData(dateString: today, appUsage: [:], appNames: [:])
+            }
         } else {
-            // New day, reset
-            self.currentUsage = UsageData(dateString: UsageManager.todayString(), appUsage: [:], appNames: [:])
-            saveData()
+            // Migration check: if usage.json exists (old format)
+            let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            let oldURL = paths[0].appendingPathComponent("com.nk.Glimpse").appendingPathComponent("usage.json")
+            if let oldData = try? Data(contentsOf: oldURL),
+               let oldUsage = try? JSONDecoder().decode(UsageData.self, from: oldData) {
+                if oldUsage.dateString == UsageManager.todayString() {
+                    self.currentUsage = oldUsage
+                }
+                self.history[oldUsage.dateString] = oldUsage
+                saveData()
+                try? FileManager.default.removeItem(at: oldURL) // Clean up old file
+            }
         }
     }
     
@@ -92,7 +112,9 @@ class UsageManager: ObservableObject {
     }
     
     private func saveData() {
-        guard let data = try? JSONEncoder().encode(currentUsage) else { return }
+        // Always save history
+        let usageHistory = UsageHistory(days: history)
+        guard let data = try? JSONEncoder().encode(usageHistory) else { return }
         try? data.write(to: usageFileURL)
     }
     
@@ -101,3 +123,4 @@ class UsageManager: ObservableObject {
         try? data.write(to: categoriesFileURL)
     }
 }
+

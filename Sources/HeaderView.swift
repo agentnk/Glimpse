@@ -2,13 +2,23 @@ import SwiftUI
 
 struct HeaderView: View {
     let isIdle: Bool
+    var onRecapTapped: () -> Void
     
     var body: some View {
         HStack {
+            Button(action: onRecapTapped) {
+                Image(systemName: "chart.bar.fill")
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(.plain)
+            .help("Daily Recap")
+            
             Text("Glimpse")
                 .font(.headline)
                 .fontWeight(.bold)
+            
             Spacer()
+            
             // Idle status badge
             HStack(spacing: 4) {
                 Circle()
@@ -24,3 +34,4 @@ struct HeaderView: View {
         .background(Color(NSColor.windowBackgroundColor))
     }
 }
+

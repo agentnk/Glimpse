@@ -6,14 +6,11 @@ This document outlines the planned future features and improvements for **Glimps
 
 ## 🔜 Up Next
 
-### 📅 Historical Data & Weekly Views
-> See how your time trends evolve across days.
+### 📊 Weekly Views & Trends
+> See how your time trends evolve across weeks.
 
-Currently, usage data is wiped at midnight. We'll upgrade `UsageManager` to retain a rolling history so users can browse back through previous days and spot productivity trends.
-
-- [ ] Save per-day snapshots to disk on midnight reset
-- [ ] Add a date picker or segmented control (Today / Yesterday / Last 7 Days)
 - [ ] Weekly aggregate bar chart using Swift Charts
+- [ ] Productivity trends (Week over Week)
 
 ---
 
@@ -38,15 +35,12 @@ These are longer-term ideas that need more exploration before committing to an i
 
 | Version | Feature |
 |---|---|
-| `v1.0.0` | Menu bar integration with `LSUIElement` |
-| `v1.0.0` | Active app tracking via `NSWorkspace` |
-| `v1.0.0` | Daily summary SwiftUI popover |
-| `v1.0.0` | Midnight data auto-reset & JSON persistence |
-| `v1.0.0` | Custom `build.sh` with ad-hoc code signing |
-| `v1.1.0` | Launch at login via `SMAppService` |
-| `v1.2.0` | Idle & inactivity detection via `CGEventSource` with live status badge |
-| `v1.3.0` | **Productivity Categorization & App Ignoring** via context menu |
+| `v1.5.0` | **Daily Recap & Historical Data** — visual end-of-day summary with historical browsing |
 | `v1.4.0` | **Live Menu Bar Timer** — real-time app name & session time in the menu bar, idle-aware, togglable |
+| `v1.3.0` | **Productivity Categorization & App Ignoring** via context menu |
+| `v1.2.0` | Idle & inactivity detection via `CGEventSource` with live status badge |
+| `v1.1.0` | Launch at login via `SMAppService` |
+| `v1.0.0` | Menu bar integration with `LSUIElement`, tracking, and basic JSON persistence |
 
 ---
 
