@@ -7,7 +7,8 @@ Glimpse quietly runs in your menu bar and tracks the time you spend on each acti
 ## Features ✨
 - **Zero Distraction:** Lives entirely in your menu bar. No dock icon, no intrusive notifications.
 - **Automatic Tracking:** Automatically detects the frontmost active app and records usage in the background.
-- **Idle Detection:** Automatically pauses tracking after 3 minutes of inactivity. Time is never logged when you step away. A live status badge in the popover header shows whether Glimpse is actively tracking or paused.
+- **Idle Detection:** Automatically pauses tracking after a customizable period of inactivity (default 3 minutes). A live status badge in the popover header shows whether Glimpse is actively tracking or paused.
+- **App Settings:** A dedicated settings panel to configure launch behavior, idle thresholds, and manage your tracking data.
 - **Live Menu Bar Timer:** Optionally displays the current app name and today's accumulated time directly in the menu bar (e.g. `VSCode  14m`), refreshing every second. Automatically hides while idle and reverts to the Glimpse eye icon when disabled.
 - **Launch at Login:** Configure Glimpse to automatically start when you boot your Mac so you never forget to launch it.
 - **Daily Recap & History:** Review your productivity with a visual "Daily Recap" summary. Browse back through previous days using the historical data engine to spot trends and review your achievements.
@@ -41,7 +42,7 @@ Glimpse is designed with a clean, modular structure to ensure easy maintainabili
 - **`UsageManager`:** Handles historical data persistence, app categorization, and seamless day-over-day archiving using JSON history files.
 - **`MenuBarManager`:** Manages the system menu bar item (`LSUIElement`) lifecycle and popover state.
 - **`MenuBarTimerManager`:** Drives the optional live label in the menu bar, polling `UsageManager` every second and respecting idle state. Preference is stored in `UserDefaults`.
-- **Views (`DailyRecapView`, `ContentView` & Subviews):** A minimalist, component-driven SwiftUI frontend providing both a live dashboard and a detailed historical recap experience.
+- **Views (`SettingsView`, `DailyRecapView`, `ContentView` & Subviews):** A minimalist, component-driven SwiftUI frontend providing a live dashboard, detailed historical recap, and centralized app settings.
 
 ## Tech Stack 💻
 * **Language:** Swift 5

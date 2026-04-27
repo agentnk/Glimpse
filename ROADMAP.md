@@ -35,6 +35,7 @@ These are longer-term ideas that need more exploration before committing to an i
 
 | Version | Feature |
 |---|---|
+| `v1.6.0` | **App Settings Page** — dedicated settings panel with customizable idle timeout and data management |
 | `v1.5.0` | **Daily Recap & Historical Data** — visual end-of-day summary with historical browsing |
 | `v1.4.0` | **Live Menu Bar Timer** — real-time app name & session time in the menu bar, idle-aware, togglable |
 | `v1.3.0` | **Productivity Categorization & App Ignoring** via context menu |

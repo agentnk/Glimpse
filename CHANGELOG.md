@@ -2,6 +2,17 @@
 
 All notable changes to the **Glimpse** project will be documented in this file.
 
+## [1.6.0] - App Settings Page
+
+### Added
+- **`SettingsView`**: A new, dedicated settings panel for managing application preferences in one place.
+- **Customizable Idle Timeout**: Users can now adjust the idle detection threshold (1, 2, 3, 5, or 10 minutes) to better suit their workflow.
+- **Data Management**: New options to "Clear Today's Data" or "Clear All History" with safety confirmation alerts.
+- **Consolidated Controls**: Moved Launch at Login and Live Timer toggles from the footer/main view to the Settings page for a cleaner interface.
+- **About Section**: Displaying app version and developer information.
+
+---
+
 ## [1.5.0] - Daily Recap & Historical Data
 
 ### Added
