@@ -38,6 +38,8 @@ struct UsageData: Codable {
             return AppUsageInfo(id: bundleID, name: name, time: time)
         }.sorted()
     }
+}
+
 struct UsageHistory: Codable {
     var days: [String: UsageData]
 }
@@ -105,6 +107,27 @@ class UsageManager: ObservableObject {
             self.objectWillChange.send()
         }
     }
+
+    /// Wipes today's tracked usage from memory and disk.
+    func clearToday() {
+        DispatchQueue.main.async {
+            let today = UsageManager.todayString()
+            self.currentUsage = UsageData(dateString: today, appUsage: [:], appNames: [:])
+            self.history[today] = self.currentUsage
+            self.saveData()
+        }
+    }
+
+    /// Wipes all historical usage data from memory and disk.
+    func clearAllHistory() {
+        DispatchQueue.main.async {
+            let today = UsageManager.todayString()
+            self.history = [:]
+            self.currentUsage = UsageData(dateString: today, appUsage: [:], appNames: [:])
+            self.saveData()
+        }
+    }
+
     
     private func loadData() {
         // Try loading history first

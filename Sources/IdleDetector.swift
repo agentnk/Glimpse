@@ -4,8 +4,14 @@ import CoreGraphics
 class IdleDetector: ObservableObject {
     static let shared = IdleDetector()
 
-    /// Number of seconds without any input before tracking is paused.
-    let idleThreshold: TimeInterval = 180 // 3 minutes
+    /// UserDefaults key for the idle threshold (stored in seconds).
+    static let thresholdKey = "idleThresholdSeconds"
+
+    /// Reads the current idle threshold from UserDefaults; defaults to 3 minutes.
+    var idleThreshold: TimeInterval {
+        let stored = UserDefaults.standard.integer(forKey: Self.thresholdKey)
+        return stored > 0 ? TimeInterval(stored) : 180
+    }
 
     /// Published so the UI can react to idle state changes.
     @Published private(set) var isIdle: Bool = false

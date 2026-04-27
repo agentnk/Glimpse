@@ -152,7 +152,7 @@ struct DailyRecapView: View {
                             
                             VStack(spacing: 1) {
                                 ForEach(sortedApps.prefix(3)) { app in
-                                    AppRowView(app: app)
+                                    AppRowView(appInfo: app)
                                         .padding(.vertical, 4)
                                     if app.id != sortedApps.prefix(3).last?.id {
                                         Divider().padding(.leading, 45)
